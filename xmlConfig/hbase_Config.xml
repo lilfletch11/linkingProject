@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <configuration>
+<property>
+<name>hbase.rootdir</name>
+<value>hdfs://ip-10-10-187-170.eu-west-1.compute.internal:8020/hbase</value>
+</property>
+<property>
+<name>hbase.client.write.buffer</name>
+<value>2097152</value>
+</property>
+<property>
+<name>hbase.client.pause</name>
+<value>1000</value>
+</property>
+<property>
+<name>hbase.client.retries.number</name>
+<value>10</value>
+</property>
+<property>
+<name>hbase.client.scanner.caching</name>
+<value>1</value>
+</property>
+<property>
+<name>hbase.client.keyvalue.maxsize</name>
+<value>10485760</value>
+</property>
+<property>
+<name>hbase.rpc.timeout</name>
+<value>60000</value>
+</property>
+<property>
+<name>hbase.security.authentication</name>
+<value>simple</value>
+</property>
+<property>
+<name>zookeeper.session.timeout</name>
+<value>60000</value>
+</property>
+<property>
+<name>zookeeper.znode.parent</name>
+<value>/hbase</value>
+</property>
+<property>
+<name>zookeeper.znode.rootserver</name>
+<value>root-region-server</value>
+</property>
+<property>
+  <name>hbase.zookeeper.property.clientPort</name>
+  <value>5181</value>
+  <description>Property from ZooKeeper's config zoo.cfg.
+    The port at which the clients will connect.
+    </description>
+</property>
+<property>
+  <name>hbase.zookeeper.quorum</name>
+  <value>phpvcoredev01,phpvcoredev02,phpvcoredev03</value>
+  <description></description>
+</property>
+</configuration>

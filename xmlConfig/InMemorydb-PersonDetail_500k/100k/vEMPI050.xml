@@ -1,0 +1,199 @@
+<duke>
+<!--To run this job:  java -classpath ".;c:\duke-1.2\*" RunDukeTestAA vEMPI240.xml -->
+<!--TO recompile wrapper:  javac -cp c:\duke-1.2\* RunDukeTestAA.java -->
+<!-- -->
+<!-- -->
+  <schema>
+    <threshold>0.99</threshold>
+    <maybe-threshold>0.5</maybe-threshold>
+    <path>test</path>
+
+	<!-- Look for exact match to an existing person key, based on all the below demographics, taking NULLs into account.
+		 This means that we need to have NULL match NULL, but by default Duke ignores any comparison involving a NULL value.
+		 If we end up modifying the code to have NULL and NOT NULL values resolve to "no match" instead of "ignore", then I think
+		 that resolves this because if NULL and NULL are matched on field A, it will ignore it, turning A && B && C && D into B && C && D
+		 which pretends that A is True. -->
+    <property>
+      <name>Identifier</name>
+	  <comparator>no.priv.garshol.duke.comparators.ExactComparator</comparator>
+      <low>0.0</low>
+      <high>1</high>
+    </property> 
+    <property>
+      <name>givenName</name> 
+      <comparator>no.priv.garshol.duke.comparators.ExactComparator</comparator>
+      <low>0.0</low>
+      <high>1</high>
+    </property>  
+    <property>
+      <name>familyName</name>
+      <comparator>no.priv.garshol.duke.comparators.ExactComparator</comparator>
+      <low>0.0</low>
+      <high>1</high>
+    </property>    
+     <property>
+      <name>address1</name>
+      <comparator>no.priv.garshol.duke.comparators.ExactComparator</comparator>
+      <low>0.0</low>
+      <high>1</high>
+    </property>   
+	<property>
+      <name>address2</name>
+      <comparator>no.priv.garshol.duke.comparators.ExactComparator</comparator>
+      <low>0.0</low>
+      <high>1</high>
+    </property> 
+    <property>
+      <name>city</name>
+      <comparator>no.priv.garshol.duke.comparators.ExactComparator</comparator>
+      <low>0.0</low>
+      <high>1</high>
+    </property>    
+	<property>
+      <name>postalCode</name>
+      <comparator>no.priv.garshol.duke.comparators.ExactComparator</comparator>
+      <low>0.0</low>
+      <high>1</high>
+    </property>    
+	<property>
+      <name>state</name>
+      <comparator>no.priv.garshol.duke.comparators.ExactComparator</comparator>
+      <low>0.0</low>
+      <high>1</high>
+    </property>   
+	<property>
+      <name>dateOfBirth</name>
+      <comparator>no.priv.garshol.duke.comparators.ExactComparator</comparator>
+      <low>0.0</low>
+      <high>1</high>
+    </property>    
+	<property>
+      <name>phone</name>
+      <comparator>no.priv.garshol.duke.comparators.ExactComparator</comparator>
+      <low>0.0</low>
+      <high>1</high>
+    </property>  
+	<property>
+      <name>ssn</name>
+      <comparator>no.priv.garshol.duke.comparators.ExactComparator</comparator>
+      <low>0.0</low>
+      <high>1</high>
+    </property>    
+  </schema>  
+  
+<!--database class="no.priv.garshol.duke.databases.LuceneDatabase">
+    <param name="min-relevance" value="0.99"/>
+    <param name="max-search-hits" value="10"/>
+    <param name="path" value="lucene-index"/> 
+    <param name="fuzzy-search" value="false"/>
+</database-->
+
+<object class="PatientDemoGraphicKeyFunction" name="PatientDemoGraphicKeyFunction"/>
+
+<database class="no.priv.garshol.duke.databases.InMemoryBlockingDatabase">    
+   <param name="window-size" value="1"/>
+   <param name="key-functions" value="PatientDemoGraphicKeyFunction"/>
+</database>
+ 
+ 
+<!--database class="no.priv.garshol.duke.databases.InMemoryDatabase">    
+  </database-->
+
+   <!-- it's possible to get the DBpedia directly from the SPARQL endpoint
+       of DBpedia, but that puts load on their servers, and so we don't
+       do that by default. if you wish, you can use this method instead. -->
+  <!--sparql>
+    <param name="endpoint" value="http://dbpedia.org/sparql"/>
+    <param name="triple-mode" value="false"/>
+    <param name="query" value='
+PREFIX dbprop: &lt;http://dbpedia.org/property/>
+PREFIX dbowl: &lt;http://dbpedia.org/ontology/>
+SELECT DISTINCT ?country ?name ?area ?capitalname
+WHERE 
+{  ?country rdf:type dbpedia-owl:Country;
+     dbprop:commonName ?name ;
+     dbprop:areaKm ?area ;
+     dbowl:capital ?capital .
+   ?capital rdfs:label ?capitalname .
+   OPTIONAL {?country dbpprop:yearEnd ?yearEnd}
+   FILTER (!bound(?yearEnd))
+   FILTER (lang(?capitalname) = "en")
+}    '/>
+
+    <column name="country"
+            property="ID"/>
+    <column name="name"
+            cleaner="no.priv.garshol.duke.LowerCaseNormalizeCleaner"
+            property="NAME"/>
+  </sparql--> 
+  
+  <!-- ORDER OF THESE GROUPS MATTERS!!! It returns links for topGroup RIGHT JOIN bottomGroup - i.e. no record is returned for a topGroup record that doesnt match a bottomGroup record.
+		However, bottomGroup records that don't join to a topGroup record are returned as "non-match" -->
+  <group>
+	  <csv>
+		<!--param name="input-file" value="e:\data\openempi_test_patients8_500k.csv" /-->
+		<param name="input-file" value="e:\data\openempi_test_patients8_500k.csv"/>
+		<param name="header-line" value="true" />
+		
+	    <column name="Identifier"
+				property="Identifier"/>
+		<column name="givenName"
+				property="givenName"/>
+		<column name="familyName"
+				property="familyName"/>
+		<column name="address2"
+				property="address2"/>
+		<column name="address1"
+				property="address1"/>
+		<column name="city"
+				property="city"/>
+		<column name="postalCode"
+				cleaner="no.priv.garshol.duke.cleaners.DigitsOnlyCleaner"
+				property="postalCode"/>
+		<column name="state"
+				property="state"/>
+		<column name="dateOfBirth"
+				property="dateOfBirth"/>
+		<column name="phone"
+				cleaner="no.priv.garshol.duke.cleaners.PhoneNumberCleaner"
+				property="phone"/>
+		<column name="ssn"
+				cleaner="no.priv.garshol.duke.cleaners.DigitsOnlyCleaner"
+				property="ssn"/>  
+	  </csv>
+  </group>
+  <group>
+	  <csv>
+	  
+		<param name="input-file" value="e:\data\openempi_test_patients3_100k.csv" />
+		<!--param name="input-file" value="e:\data\openempi_test_patientsssnb_5k.csv or openempi_test_patientsssnb_5" /-->
+		<param name="header-line" value="true" />
+		
+	    <column name="Identifier"
+				property="Identifier"/>
+		<column name="givenName"
+				property="givenName"/>
+		<column name="familyName"
+				property="familyName"/>
+		<column name="address2"
+				property="address2"/>
+		<column name="address1"
+				property="address1"/>
+		<column name="city"
+				property="city"/>
+		<column name="postalCode"
+				cleaner="no.priv.garshol.duke.cleaners.DigitsOnlyCleaner"
+				property="postalCode"/>
+		<column name="state"
+				property="state"/>
+		<column name="dateOfBirth"
+				property="dateOfBirth"/>
+		<column name="phone"
+				cleaner="no.priv.garshol.duke.cleaners.PhoneNumberCleaner"
+				property="phone"/>
+		<column name="ssn"
+				cleaner="no.priv.garshol.duke.cleaners.DigitsOnlyCleaner"
+				property="ssn"/>  
+	  </csv>
+  </group>
+</duke>
